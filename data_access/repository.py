@@ -11,7 +11,7 @@ from data_access.models import data, create_schema
 class Repository:
     def __init__(self, connection) -> None:
         self.connection = connection
-    
+
     def create_schema_if_not_exists(self):
         insp = inspect(self.connection)
         if not insp.has_table("test.db", schema="data"):

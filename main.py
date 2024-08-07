@@ -6,12 +6,11 @@ from datetime import datetime
 from dataclasses import dataclass
 import os
 
-from data_access.repository import Repository
 import utils.google_drive as google_drive
 from dependencies.drive_persistence import DrivePersistence
 from dependencies.google_cloud_api import GoogleCloudApi
+from dependencies.postgres_repository import PostgresRepository
 from utils.local_drive import file_exists_on_disk
-from data_access.create_connection import create_connection
 from settings.config import CONFIG
 from utils.parse_stream import MultiPartFormDataParser, parse_http_header_parameters
 from dependencies.drive_persistence import DrivePersistence
@@ -20,12 +19,7 @@ from dependencies.drive_persistence import DrivePersistence
 if not os.path.isdir(CONFIG.FILES_PATH):
     os.mkdir(CONFIG.FILES_PATH)
 
-postgre_repository = Repository(create_connection(CONFIG.POSTGRE_CONNECTION_STR))
-
-postgre_repository.create_schema_if_not_exists()
-
-def get_postgre_repository():
-    return postgre_repository
+PostgresRepository.create_schema_if_not_exists()
 
 app = FastAPI()
 
@@ -45,7 +39,7 @@ async def upload_file(
         request: Request,
         drive_persistence=Depends(DrivePersistence),
         cloud_api=Depends(GoogleCloudApi),
-        repository=Depends(get_postgre_repository)
+        repository=Depends(PostgresRepository)
     ):
 
     # Initialize the multipart form data parser with request headers
@@ -100,7 +94,7 @@ def stream_file(path):
 async def download_file(
         uuid,
         cloud_api=Depends(GoogleCloudApi),
-        repository=Depends(get_postgre_repository)
+        repository=Depends(PostgresRepository)
     ):
 
     metadata = repository.get_metadata_by_uuid(uuid)

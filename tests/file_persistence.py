@@ -5,24 +5,19 @@ import os
 
 from dependencies.drive_persistence import DrivePersistence
 from dependencies.google_cloud_api import GoogleCloudApi
-from main import app, get_postgre_repository, Metadata
-from data_access.create_connection import create_connection
+from dependencies.postgres_repository import PostgresRepository
+from dependencies.sqlite_repository import SqliteRepository
+from main import app, Metadata
 from data_access.models import data
-from data_access.repository import Repository
 from settings.config import CONFIG
 
 
 client = TestClient(app)
 
 
-sqlite_repository = Repository(create_connection(CONFIG.SQLITE_CONNECTION_STR))
-
 # Drop existing data and create schema if it does not exist
-data.drop(bind=sqlite_repository.connection)
-sqlite_repository.create_schema_if_not_exists()
-
-def get_sqlite_repository():
-    return sqlite_repository
+data.drop(bind=SqliteRepository.get_connection())
+SqliteRepository.create_schema_if_not_exists()
 
 
 # Mock class to simulate file operations
@@ -58,7 +53,7 @@ class TestFilePersistence(unittest.TestCase):
     def test_upload_file(self):
         app.dependency_overrides[DrivePersistence] = TestPersistence
         app.dependency_overrides[GoogleCloudApi] = TestCloudApi
-        app.dependency_overrides[get_postgre_repository] = get_sqlite_repository
+        app.dependency_overrides[PostgresRepository] = SqliteRepository
 
         with open("test.txt", "rb") as f:
             expected_file_length = len(f.read())
@@ -73,7 +68,7 @@ class TestFilePersistence(unittest.TestCase):
 
     def test_download_file(self):
         app.dependency_overrides[GoogleCloudApi] = TestCloudApi
-        app.dependency_overrides[get_postgre_repository] = get_sqlite_repository
+        app.dependency_overrides[PostgresRepository] = SqliteRepository
 
         uuid = "1d2ea29b-dcb9-4e12-a216-b6288f98a5b6"
         
@@ -99,7 +94,7 @@ class TestFilePersistence(unittest.TestCase):
         )
 
         # {'id': 1, 'uuid': '1d2ea29b-dcb9-4e12-a216-b6288f98a5b6', 'name': 'test', 'size': '2696', 'format': 'text/plain', 'extension': '.txt', 'was_uploaded_on': datetime.datetime(2024, 8, 6, 14, 6, 19, 560894)}
-        sqlite_repository.insert_new_metadata(metadata)
+        SqliteRepository.insert_new_metadata(metadata)
 
         with open(test_file_path, "rb") as f:
             expected_file_length = len(f.read())
