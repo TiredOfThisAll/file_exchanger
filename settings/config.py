@@ -17,4 +17,6 @@ class Config:
         self.FILES_PATH = os.path.join(self.PROJECT_PATH, config_dict["files_path"])
         self.GOOGLE_API_KEY_PATH = os.path.join(self.PROJECT_PATH, config_dict["google_api_key_path"])
 
+        self.MAX_FILE_SIZE = config_dict["max_file_size"]
+
 CONFIG = Config()

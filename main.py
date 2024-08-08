@@ -14,6 +14,7 @@ from settings.config import CONFIG
 from utils.parse_stream import MultiPartFormDataParser, parse_http_header_parameters
 from dependencies.drive_persistence import DrivePersistence
 from data_classes.metadata import Metadata
+from middlewares.limit_file_size import FileSizeLimitMiddleware
 
 
 if not os.path.isdir(CONFIG.FILES_PATH):
@@ -23,6 +24,7 @@ PostgresRepository.create_db_if_not_exists()
 PostgresRepository.create_schema_if_not_exists()
 
 app = FastAPI()
+app.add_middleware(FileSizeLimitMiddleware, max_file_size=CONFIG.MAX_FILE_SIZE)
 
 
 @app.post("/api/upload-file/")
