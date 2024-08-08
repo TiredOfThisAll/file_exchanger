@@ -9,6 +9,6 @@ from tasks import clear_db
 app.conf.beat_schedule = {
     'run-my-job-daily': {
         'task': 'tasks.clear_db.clear_old_files',
-        'schedule': crontab(hour=0, minute=0),
+        'schedule': crontab(minute="*"),
     },
 }
