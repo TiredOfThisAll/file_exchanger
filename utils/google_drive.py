@@ -1,9 +1,8 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload, HttpError
+from googleapiclient.http import HttpError
 import asyncio
-import os
-import io
+from datetime import datetime
 
 from settings.config import CONFIG
 
@@ -17,37 +16,32 @@ service = build(
 ))
 
 
-def upload_file(path, file_uuid, google_cloud_api):
-    asyncio.get_event_loop().run_in_executor(
-        None,
-        google_cloud_api.upload,
-        service,
-        file_uuid,
-        path
-    )
-
-
-def download_file_from_cloud(google_file_id, path, file_uuid):
+def upload_file(path, file_uuid, google_cloud_api, logger):
     try:
-        request_file = service.files().get_media(fileId=google_file_id)
-        file = io.FileIO(os.path.join(path, file_uuid), mode='wb')
-        downloader = MediaIoBaseDownload(file, request_file)
-        done = False
-        while done is False:
-            status, done = downloader.next_chunk()
-            print(F'Download {int(status.progress() * 100)}.')
+        asyncio.get_event_loop().run_in_executor(
+            None,
+            google_cloud_api.upload,
+            service,
+            file_uuid,
+            path
+        )
     except HttpError as error:
-        print(F'An error occurred: {error}')
+        logger.info(f'{datetime.now()}|An error occured: {error}')
+        return error
 
 
-def download_file(path, file_uuid):
-    files_on_cloud = list_files()['files']
+def download_file(path, file_uuid, google_cloud_api, logger):
+    try:
+        files_on_cloud = list_files()['files']
 
-    for file in files_on_cloud:
-        if file['name'] == file_uuid:
-            download_file_from_cloud(file['id'], path, file_uuid)
-            return
-    return "File not found"
+        for file in files_on_cloud:
+            if file['name'] == file_uuid:
+                google_cloud_api.download(service, file['id'], path, file_uuid)
+    except HttpError as error:
+        logger.error(f'{datetime.now()}|An error occured: {error}')
+        return error
+    logger.info(f"{datetime.now()}|File with uuid:{file_uuid} not found")
+    return f"File with uuid:{file_uuid} not found"
                 
 
 def list_files():

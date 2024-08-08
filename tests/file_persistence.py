@@ -2,11 +2,13 @@ from fastapi.testclient import TestClient
 import unittest
 from datetime import datetime
 import os
+import logging
 
 from dependencies.drive_persistence import DrivePersistence
 from dependencies.google_cloud_api import GoogleCloudApi
 from dependencies.postgres_repository import PostgresRepository
 from dependencies.sqlite_repository import SqliteRepository
+from dependencies.main_logger import MainLogger
 from main import app, Metadata
 from data_access.models import data
 from settings.config import CONFIG
@@ -47,12 +49,40 @@ class TestCloudApi:
     def upload(self, service, file_name, file_path):
         pass
 
+    def download(self, service, google_file_id, path, file_uuid):
+        pass
+
+
+class TestLogger:
+    @staticmethod
+    def debug(msg):
+        pass
+
+    @staticmethod
+    def info(msg):
+        pass
+
+    @staticmethod
+    def warning(msg):
+        pass
+    
+    @staticmethod
+    def error(msg):
+        pass
+    
+    @staticmethod
+    def critical(msg):
+        pass
+
 
 class TestFilePersistence(unittest.TestCase):
     def test_upload_file(self):
         app.dependency_overrides[DrivePersistence] = TestPersistence
         app.dependency_overrides[GoogleCloudApi] = TestCloudApi
         app.dependency_overrides[PostgresRepository] = SqliteRepository
+        app.dependency_overrides[MainLogger] = TestLogger
+
+        logging.disable(logging.CRITICAL + 1)
 
         with open("test.txt", "rb") as f:
             expected_file_length = len(f.read())
@@ -67,6 +97,9 @@ class TestFilePersistence(unittest.TestCase):
     def test_download_file(self):
         app.dependency_overrides[GoogleCloudApi] = TestCloudApi
         app.dependency_overrides[PostgresRepository] = SqliteRepository
+        app.dependency_overrides[MainLogger] = TestLogger
+
+        logging.disable(logging.CRITICAL + 1)
 
         uuid = "1d2ea29b-dcb9-4e12-a216-b6288f98a5b6"
         

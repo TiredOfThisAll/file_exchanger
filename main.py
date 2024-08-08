@@ -4,21 +4,26 @@ from uuid import uuid4
 from fastapi.openapi.utils import get_openapi
 from datetime import datetime
 import os
+import logging
 
 import utils.google_drive as google_drive
 from dependencies.drive_persistence import DrivePersistence
 from dependencies.google_cloud_api import GoogleCloudApi
 from dependencies.postgres_repository import PostgresRepository
+from dependencies.drive_persistence import DrivePersistence
+from dependencies.main_logger import MainLogger
 from utils.local_drive import file_exists_on_disk
 from settings.config import CONFIG
 from utils.parse_stream import MultiPartFormDataParser, parse_http_header_parameters
-from dependencies.drive_persistence import DrivePersistence
 from data_classes.metadata import Metadata
 from middlewares.limit_file_size import FileSizeLimitMiddleware
 
 
 if not os.path.isdir(CONFIG.FILES_PATH):
     os.mkdir(CONFIG.FILES_PATH)
+
+if not os.path.isdir(CONFIG.LOGS_PATH):
+    os.mkdir(CONFIG.LOGS_PATH)
 
 PostgresRepository.create_db_if_not_exists()
 PostgresRepository.create_schema_if_not_exists()
@@ -32,8 +37,11 @@ async def upload_file(
         request: Request,
         drive_persistence=Depends(DrivePersistence),
         cloud_api=Depends(GoogleCloudApi),
-        repository=Depends(PostgresRepository)
+        repository=Depends(PostgresRepository),
+        logger=Depends(MainLogger)
     ):
+
+    logger.info(f"{datetime.now()}|{request.url.hostname}:{request.url.port} - {request.method} {request.url.path}")
 
     parser = MultiPartFormDataParser(request.headers)
     filesize = 0
@@ -47,8 +55,7 @@ async def upload_file(
             for content in content_list:
                 filesize += len(content)
                 await out_file.write(content)
-
-    google_drive.upload_file(os.path.join(CONFIG.FILES_PATH, uuid), uuid, cloud_api)
+    
 
     filename = parse_http_header_parameters(
         parser.content_headers["Content-Disposition"]
@@ -57,6 +64,20 @@ async def upload_file(
     content_type = parser.content_headers["Content-Type"]
     
     was_uploaded_on = datetime.now()
+
+    logger.info(f"{datetime.now()}|File {filename + ext} uploaded on drive")
+
+    error = google_drive.upload_file(
+        os.path.join(CONFIG.FILES_PATH, uuid),
+        uuid,
+        cloud_api,
+        logger
+    )
+
+    if error:
+        return JSONResponse({"error": error}, 502)
+
+    logger.info(f"{datetime.now()}|File {filename + ext} uploaded on cloud")
 
     metadata = Metadata(
         uuid,
@@ -79,18 +100,24 @@ def stream_file(path):
 
 @app.get("/api/download-file/{uuid}")
 async def download_file(
+        request: Request,
         uuid,
         cloud_api=Depends(GoogleCloudApi),
-        repository=Depends(PostgresRepository)
+        repository=Depends(PostgresRepository),
+        logger=Depends(MainLogger)
     ):
+
+    logger.info(f"{request.url.hostname}:{request.url.port} - {request.method} {request.url.path}")
 
     metadata = repository.get_metadata_by_uuid(uuid)
 
     if not file_exists_on_disk(CONFIG.FILES_PATH, uuid):
         # If the file does not exist, attempt to download it from the cloud
-        error = cloud_api.download_file(CONFIG.FILES_PATH, uuid)
+        error = google_drive.download_file(CONFIG.FILES_PATH, uuid, cloud_api, logger)
         if error is not None:
-            return JSONResponse({"error": uuid})
+            if error.startswith("File with uuid"):
+                return JSONResponse({"error": error}, 404)
+            return JSONResponse({"error": error}, 502)
 
     filename = metadata.name + metadata.extension
 
