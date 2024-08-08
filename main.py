@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from uuid import uuid4
 from fastapi.openapi.utils import get_openapi
 from datetime import datetime
-from dataclasses import dataclass
 import os
 
 import utils.google_drive as google_drive
@@ -14,6 +13,7 @@ from utils.local_drive import file_exists_on_disk
 from settings.config import CONFIG
 from utils.parse_stream import MultiPartFormDataParser, parse_http_header_parameters
 from dependencies.drive_persistence import DrivePersistence
+from data_classes.metadata import Metadata
 
 
 if not os.path.isdir(CONFIG.FILES_PATH):
@@ -22,16 +22,6 @@ if not os.path.isdir(CONFIG.FILES_PATH):
 PostgresRepository.create_schema_if_not_exists()
 
 app = FastAPI()
-
-
-@dataclass
-class Metadata:
-    uuid: str
-    filename: str
-    filesize: int
-    content_type: str
-    extension: str
-    was_uploaded_on: datetime
 
 
 @app.post("/api/upload-file/")
