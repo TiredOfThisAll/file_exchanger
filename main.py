@@ -19,6 +19,7 @@ from data_classes.metadata import Metadata
 if not os.path.isdir(CONFIG.FILES_PATH):
     os.mkdir(CONFIG.FILES_PATH)
 
+PostgresRepository.create_db_if_not_exists()
 PostgresRepository.create_schema_if_not_exists()
 
 app = FastAPI()
@@ -32,27 +33,21 @@ async def upload_file(
         repository=Depends(PostgresRepository)
     ):
 
-    # Initialize the multipart form data parser with request headers
     parser = MultiPartFormDataParser(request.headers)
     filesize = 0
 
-    # Generate a unique identifier for the file
     uuid = str(uuid4())
 
-    # Open a file for writing in the specified path using drive persistence
+    # Save file from stream
     async with drive_persistence.open(os.path.join(CONFIG.FILES_PATH, uuid)) as out_file:
-        # Stream the request data in chunks
         async for chunk in request.stream():
-            # Parse each chunk to get the content parts
             content_list = parser.parse_chunk(chunk)
             for content in content_list:
-                # Update the file size and write the content to the file
                 filesize += len(content)
                 await out_file.write(content)
 
     google_drive.upload_file(os.path.join(CONFIG.FILES_PATH, uuid), uuid, cloud_api)
 
-    # Parse the filename and other metadata from the content headers
     filename = parse_http_header_parameters(
         parser.content_headers["Content-Disposition"]
     )["filename"]
@@ -105,7 +100,6 @@ async def download_file(
 
 
 def custom_openapi():
-    # Return the existing schema if it has already been generated
     if app.openapi_schema:
         return app.openapi_schema
     

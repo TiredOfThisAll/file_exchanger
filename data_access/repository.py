@@ -1,7 +1,9 @@
 from sqlalchemy import insert, select, inspect
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists, create_database
 
 from data_access.models import data, create_schema
+from settings.config import CONFIG
 
 
 # b'form-data; name="file"; filename="ghjunyhgfg87654kjngvd-bkmijrfd04532lkijtgr-hbedkuj73982jhbgvf-a-foto-naruto-uzumaki-3853528402.jpg"'
@@ -12,9 +14,13 @@ class Repository:
     def __init__(self, connection) -> None:
         self.connection = connection
 
+    def create_db_if_not_exists(self):
+        if not database_exists(self.connection.url):
+            create_database(self.connection.url)
+
     def create_schema_if_not_exists(self):
         insp = inspect(self.connection)
-        if not insp.has_table("test.db", schema="data"):
+        if not insp.has_table(CONFIG.DATABASE, schema=data.name):
             create_schema(self.connection)
 
     def insert_new_metadata(self, metadata):

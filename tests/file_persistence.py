@@ -14,8 +14,7 @@ from settings.config import CONFIG
 
 client = TestClient(app)
 
-
-# Drop existing data and create schema if it does not exist
+SqliteRepository.create_db_if_not_exists()
 data.drop(bind=SqliteRepository.get_connection())
 SqliteRepository.create_schema_if_not_exists()
 
@@ -62,7 +61,6 @@ class TestFilePersistence(unittest.TestCase):
                 files={"file": ("test.txt", f, "text/plain")}
             )
         
-        # Verify the uploaded file length matches the expected length
         actual_file_length = TestPersistence.instance.mock_file.bytes_written
         self.assertEqual(expected_file_length, actual_file_length)
 
@@ -100,5 +98,4 @@ class TestFilePersistence(unittest.TestCase):
             expected_file_length = len(f.read())
             response = client.get(f"/api/download-file/{uuid}")
         
-        # Verify the downloaded file length matches the expected length
         self.assertEqual(expected_file_length, response.num_bytes_downloaded)
