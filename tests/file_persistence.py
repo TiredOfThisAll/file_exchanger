@@ -1,8 +1,8 @@
-from fastapi.testclient import TestClient
 import unittest
 from datetime import datetime
 import os
 import logging
+from fastapi.testclient import TestClient
 
 from dependencies.drive_persistence import DrivePersistence
 from dependencies.google_cloud_api import GoogleCloudApi
@@ -65,11 +65,11 @@ class TestLogger:
     @staticmethod
     def warning(msg):
         pass
-    
+
     @staticmethod
     def error(msg):
         pass
-    
+
     @staticmethod
     def critical(msg):
         pass
@@ -102,7 +102,7 @@ class TestFilePersistence(unittest.TestCase):
         logging.disable(logging.CRITICAL + 1)
 
         uuid = "1d2ea29b-dcb9-4e12-a216-b6288f98a5b6"
-        
+
         test_file_path = os.path.join(CONFIG.FILES_PATH, uuid)
 
         if not os.path.exists(test_file_path):
@@ -115,7 +115,7 @@ class TestFilePersistence(unittest.TestCase):
         else:
             with open(test_file_path) as f:
                 filesize = len(f.read())
-        
+
         metadata = Metadata(uuid,
             "test",
             filesize,
@@ -130,5 +130,5 @@ class TestFilePersistence(unittest.TestCase):
         with open(test_file_path, "rb") as f:
             expected_file_length = len(f.read())
             response = client.get(f"/api/download-file/{uuid}")
-        
+
         self.assertEqual(expected_file_length, response.num_bytes_downloaded)

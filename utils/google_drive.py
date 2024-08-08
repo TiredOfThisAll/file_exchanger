@@ -1,8 +1,8 @@
+import asyncio
+from datetime import datetime
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import HttpError
-import asyncio
-from datetime import datetime
 
 from settings.config import CONFIG
 
@@ -42,7 +42,7 @@ def download_file(path, file_uuid, google_cloud_api, logger):
         return error
     logger.info(f"{datetime.now()}|File with uuid:{file_uuid} not found")
     return f"File with uuid:{file_uuid} not found"
-                
+
 
 def list_files():
     return service.files().list(

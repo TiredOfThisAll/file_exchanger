@@ -9,7 +9,7 @@ class PostgresRepository:
     @staticmethod
     def get_connection():
         return PostgresRepository.singleton.connection
-    
+
     @staticmethod
     def create_db_if_not_exists():
         return PostgresRepository.singleton.create_db_if_not_exists()

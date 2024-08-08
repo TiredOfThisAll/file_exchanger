@@ -1,5 +1,6 @@
-from celery_settings.celery_config import app
 from celery.schedules import crontab
+
+from celery_settings.celery_config import app
 
 # Import the task module to ensure tasks are registered
 from tasks import clear_db

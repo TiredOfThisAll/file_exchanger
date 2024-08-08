@@ -1,5 +1,6 @@
 from sqlalchemy import insert, select, inspect
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError
 from sqlalchemy_utils import database_exists, create_database
 
 from data_access.models import data, create_schema
@@ -35,16 +36,13 @@ class Repository:
             ))
             conn.commit()
 
-
     def get_metadata_by_uuid(self, uuid):
         with self.connection.connect() as conn:
             return conn.execute(select(data).where(data.c.uuid == uuid)).first()
 
-
     def get_all_metadata(self):
         with self.connection.connect() as conn:
             return conn.execute(select(data))
-
 
     def delete_old_records(self, timestamp):
         session = sessionmaker(bind=self.connection)()
@@ -53,7 +51,10 @@ class Repository:
                 session.execute(data.delete().where(data.c.was_uploaded_on < timestamp))
 
             session.commit()
-        
-        except Exception as e:
+
+        except (IntegrityError, OperationalError) as e:
+            session.rollback()
+            return e
+        except SQLAlchemyError as e:
             session.rollback()
             return e

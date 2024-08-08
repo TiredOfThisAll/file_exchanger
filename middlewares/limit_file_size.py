@@ -1,14 +1,6 @@
-from typing import Optional
 from fastapi import HTTPException
 
 class FileSizeLimitMiddleware:
-    """Content size limiting middleware for ASGI applications
-
-    Args:
-      app (ASGI application): ASGI application
-      max_file_size (optional): the maximum content size allowed in bytes, None for no limit
-    """
-
     def __init__(self, app, max_file_size):
         self.app = app
         self.max_file_size = max_file_size

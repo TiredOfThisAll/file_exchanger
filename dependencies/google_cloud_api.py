@@ -1,7 +1,6 @@
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload, HttpError
 import io
 import os
-from datetime import datetime
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 
 class GoogleCloudApi:

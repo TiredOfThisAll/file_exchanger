@@ -9,7 +9,7 @@ class SqliteRepository:
     @staticmethod
     def get_connection():
         return SqliteRepository.singleton.connection
-    
+
     @staticmethod
     def create_db_if_not_exists():
         return SqliteRepository.singleton.create_db_if_not_exists()

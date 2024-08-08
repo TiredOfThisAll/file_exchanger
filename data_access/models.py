@@ -14,5 +14,6 @@ data = Table(
     Column('was_uploaded_on', DateTime)
 )
 
+
 def create_schema(engine):
     metadata.create_all(bind=engine)
