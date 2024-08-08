@@ -82,7 +82,7 @@ async def upload_file(
 
     repository.insert_new_metadata(metadata)
     
-    return 200
+    return JSONResponse({"uuid": uuid}, 200)
 
 
 def stream_file(path):
