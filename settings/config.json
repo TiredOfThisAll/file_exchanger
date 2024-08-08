@@ -1,5 +1,6 @@
 {
-    "postgre_connection_str": "postgresql+psycopg2://user:password@host:port/db",
+    "postgre_connection_str": "postgresql+psycopg2://user:password@host:port/test.db",
     "sqlite_connection_str": "sqlite:///test.db",
-    "files_path": "files"
+    "files_path": "path to files folder",
+    "google_api_key_path": "path to api key"
 }

@@ -14,5 +14,6 @@ class Config:
 
         # the path must be relative to the root folder of the project
         self.FILES_PATH = os.path.join(self.PROJECT_PATH, config_dict["files_path"])
+        self.GOOGLE_API_KEY_PATH = os.path.join(self.PROJECT_PATH, config_dict["google_api_key_path"])
 
 CONFIG = Config()

@@ -5,12 +5,14 @@ import asyncio
 import os
 import io
 
+from settings.config import CONFIG
+
 
 service = build(
     'drive',
     'v3',
     credentials=service_account.Credentials.from_service_account_file(
-        filename= os.path.join('settings', 'google_drive_api_key.json'),
+        filename=CONFIG.GOOGLE_API_KEY_PATH,
         scopes=['https://www.googleapis.com/auth/drive']
 ))
 
