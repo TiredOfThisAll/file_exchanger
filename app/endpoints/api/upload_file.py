@@ -4,15 +4,15 @@ import os
 from fastapi import Request, Depends, APIRouter
 from fastapi.responses import JSONResponse
 
-from dependencies.drive_persistence import DrivePersistence
-from dependencies.google_cloud_api import GoogleCloudApi
-from dependencies.postgres_repository import PostgresRepository
-from dependencies.main_logger import MainLogger
+from app.dependencies.drive_persistence import DrivePersistence
+from app.dependencies.google_cloud_api import GoogleCloudApi
+from app.dependencies.postgres_repository import PostgresRepository
+from app.dependencies.main_logger import MainLogger
 
-from utils import google_drive
-from utils.parse_stream import MultiPartFormDataParser, parse_http_header_parameters
+from app.utils import google_drive
+from app.utils.parse_stream import MultiPartFormDataParser, parse_http_header_parameters
 from settings.config import CONFIG
-from data_classes.metadata import Metadata
+from data.data_classes.metadata import Metadata
 
 
 router = APIRouter()

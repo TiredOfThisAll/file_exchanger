@@ -1,5 +1,5 @@
-from data_access.repository import Repository
-from data_access.create_connection import create_connection
+from data.data_access.repository import Repository
+from data.data_access.create_connection import create_connection
 from settings.config import CONFIG
 
 

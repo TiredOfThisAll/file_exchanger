@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, OperationalError
 from sqlalchemy_utils import database_exists, create_database
 
-from data_access.models import data, create_schema
+from data.data_access.models import data, create_schema
 from settings.config import CONFIG
 
 

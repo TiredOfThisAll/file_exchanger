@@ -2,12 +2,12 @@ import os
 from fastapi import Request, Depends, APIRouter
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from dependencies.google_cloud_api import GoogleCloudApi
-from dependencies.postgres_repository import PostgresRepository
-from dependencies.main_logger import MainLogger
+from app.dependencies.google_cloud_api import GoogleCloudApi
+from app.dependencies.postgres_repository import PostgresRepository
+from app.dependencies.main_logger import MainLogger
 
-from utils.local_drive import file_exists_on_disk
-from utils import google_drive
+from app.utils.local_drive import file_exists_on_disk
+from app.utils import google_drive
 from settings.config import CONFIG
 
 router = APIRouter()

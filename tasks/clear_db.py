@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from celery.utils.log import get_task_logger
 
-from data_access.repository import Repository
-from data_access.create_connection import create_connection
+from data.data_access.repository import Repository
+from data.data_access.create_connection import create_connection
 from celery_settings.celery_config import app
 from settings.config import CONFIG
 

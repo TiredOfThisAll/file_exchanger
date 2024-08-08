@@ -14,9 +14,18 @@ class Config:
         self.DATABASE = config_dict["database"]
 
         # the path must be relative to the root folder of the project
-        self.FILES_PATH = os.path.join(self.PROJECT_PATH, config_dict["files_dir_path"])
-        self.GOOGLE_API_KEY_PATH = os.path.join(self.PROJECT_PATH, config_dict["google_api_key_path"])
-        self.LOGS_PATH = os.path.join(self.PROJECT_PATH, config_dict["logs_dir_path"])
+        self.FILES_PATH = os.path.join(
+            self.PROJECT_PATH,
+            config_dict["files_dir_path"]
+        )
+        self.GOOGLE_API_KEY_PATH = os.path.join(
+            self.PROJECT_PATH,
+            config_dict["google_api_key_path"]
+        )
+        self.LOGS_PATH = os.path.join(
+            self.PROJECT_PATH,
+            config_dict["logs_dir_path"]
+        )
         self.LOGS_FILE_NAME = config_dict["logs_file_name"]
 
         self.MAX_FILE_SIZE = config_dict["max_file_size"]

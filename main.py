@@ -1,12 +1,13 @@
 import os
+import logging
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
 
-from dependencies.postgres_repository import PostgresRepository
+from app.dependencies.postgres_repository import PostgresRepository
+from app.middlewares.limit_file_size import FileSizeLimitMiddleware
+from app.endpoints.api_router import api_router
 from settings.config import CONFIG
-from middlewares.limit_file_size import FileSizeLimitMiddleware
-from endpoints.api_router import api_router
 
 
 if not os.path.isdir(CONFIG.FILES_PATH):
@@ -14,6 +15,12 @@ if not os.path.isdir(CONFIG.FILES_PATH):
 
 if not os.path.isdir(CONFIG.LOGS_PATH):
     os.mkdir(CONFIG.LOGS_PATH)
+
+logging.basicConfig(
+            filename=os.path.join(CONFIG.LOGS_PATH, CONFIG.LOGS_FILE_NAME),
+            encoding='utf-8',
+            level=logging.DEBUG
+        )
 
 PostgresRepository.create_db_if_not_exists()
 PostgresRepository.create_schema_if_not_exists()

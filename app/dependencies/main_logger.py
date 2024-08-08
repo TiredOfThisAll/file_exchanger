@@ -1,4 +1,4 @@
-from dependencies.base_logger import BaseLogger
+from app.dependencies.base_logger import BaseLogger
 
 class MainLogger:
     singleton = BaseLogger()

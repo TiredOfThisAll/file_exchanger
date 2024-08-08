@@ -4,13 +4,14 @@ import os
 import logging
 from fastapi.testclient import TestClient
 
-from dependencies.drive_persistence import DrivePersistence
-from dependencies.google_cloud_api import GoogleCloudApi
-from dependencies.postgres_repository import PostgresRepository
-from dependencies.sqlite_repository import SqliteRepository
-from dependencies.main_logger import MainLogger
-from main import app, Metadata
-from data_access.models import data
+from app.dependencies.drive_persistence import DrivePersistence
+from app.dependencies.google_cloud_api import GoogleCloudApi
+from app.dependencies.postgres_repository import PostgresRepository
+from app.dependencies.sqlite_repository import SqliteRepository
+from app.dependencies.main_logger import MainLogger
+from main import app
+from data.data_access.models import data
+from data.data_classes.metadata import Metadata
 from settings.config import CONFIG
 
 
