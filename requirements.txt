@@ -1,0 +1,8 @@
+google-api-python-client == 2.139.0
+google-auth-httplib2 == 0.2.0
+google-auth == 2.14.1
+fastapi == 0.110.0
+aiofiles == 23.2.1
+SQLAlchemy == 2.0.28
+celery[redis] == 5.4.0
+SQLAlchemy-Utils == 0.41.2
