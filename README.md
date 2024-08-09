@@ -1,4 +1,3 @@
-Here's a `README.md` for your FastAPI project called **File Exchanger**:
 
 ---
 
