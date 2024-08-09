@@ -21,6 +21,7 @@ Before running the application, you need to provide configuration settings in a 
 {
     "postgre_connection_str": "postgresql+psycopg2://user:password@host:port/db_name",
     "sqlite_connection_str": "sqlite:///db_name",
+    "celery_broker_str": "broker://host:port/db",
     "database": "db_name",
     "files_dir_path": "relative path to files folder",
     "google_api_key_path": "relative path to google api key.json",
@@ -32,6 +33,7 @@ Before running the application, you need to provide configuration settings in a 
 
 - **postgre_connection_str**: Connection string for the PostgreSQL database.
 - **sqlite_connection_str**: Connection string for the SQLite database.
+- **celery_broker_str**: Connection string for the celery broker.
 - **database**: The name of the database to use.
 - **files_dir_path**: Path to the directory where files will be stored.
 - **google_api_key_path**: Path to the Google API key JSON file.
