@@ -26,7 +26,7 @@ Before running the application, you need to provide configuration settings in a 
     "google_api_key_path": "relative path to google api key.json",
     "logs_dir_path": "relative path to logs folder",
     "logs_file_name": "name of the log file",
-    "max_file_size": max file size in bytes
+    "max_file_size": "max file size in bytes"
 }
 ```
 
